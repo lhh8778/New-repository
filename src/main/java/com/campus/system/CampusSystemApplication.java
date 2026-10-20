@@ -1,4 +1,4 @@
-﻿package com.campus.system;
+package com.campus.system;
 public class CampusSystemApplication {
     public static void main(String[] args) {
         System.out.println("========== [Sprint 2 Demo & Automated Verification] ==========");

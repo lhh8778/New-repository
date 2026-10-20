@@ -1,4 +1,4 @@
-﻿package com.campus.system.model.entity;
+package com.campus.system.model.entity;
 public class LostItem {
     private Long id;
     private String title;

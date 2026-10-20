@@ -1,4 +1,4 @@
-﻿package com.campus.system.test;
+package com.campus.system.test;
 
 public class Sprint2TestRunner {
     public static void main(String[] args) {
