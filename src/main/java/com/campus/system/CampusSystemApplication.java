@@ -14,6 +14,7 @@ import com.campus.system.repository.InMemoryLostAndFoundRepository;
 import com.campus.system.repository.InMemoryUserRepository;
 import com.campus.system.service.impl.LostAndFoundServiceImpl;
 import com.campus.system.service.impl.UserServiceImpl;
+
 import java.util.List;
 
 public class CampusSystemApplication {
@@ -22,6 +23,7 @@ public class CampusSystemApplication {
         System.out.println("          CampusMate Smart Campus Life Service Platform (Sprint 1 & 2 Demo)     ");
         System.out.println("================================================================================");
 
+        // 初始化分层依赖
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
         InMemoryLostAndFoundRepository lostRepo = new InMemoryLostAndFoundRepository();
         AuthController authController = new AuthController(new UserServiceImpl(userRepo));

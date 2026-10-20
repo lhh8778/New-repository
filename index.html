@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMate 智慧校园生活服务平台</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* ================= 顶部全局轻提示 (Toast) ================= */
+        #toastContainer { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            min-width: 300px; padding: 14px 18px; border-radius: 10px; background: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12); border-left: 5px solid var(--primary);
+            display: flex; align-items: center; justify-content: space-between; font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ================= 1. 统一身份认证门户 ================= */
+        #authPortal {
+            min-height: 100vh; display: flex;
+            background: linear-gradient(135deg, #090d16 0%, #1e3a8a 100%);
+        }
+        .auth-banner {
+            flex: 1.2; padding: 80px 90px; color: #fff; display: flex; flex-direction: column; justify-content: space-between;
+            background: radial-gradient(circle at 25% 35%, rgba(56, 189, 248, 0.16) 0%, transparent 65%);
+        }
+        .brand-header { display: flex; align-items: center; gap: 16px; }
+        .brand-logo {
+            width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #38bdf8, #2563eb);
+            display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(37,99,235,0.4);
+        }
+        .brand-title h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+        .brand-title p { font-size: 14px; color: #94a3b8; margin-top: 2px; }
+
+        .banner-hero { max-width: 600px; margin: auto 0; }
+        .banner-hero h2 { font-size: 46px; line-height: 1.35; margin-bottom: 20px; font-weight: 800; }
+        .banner-hero p.tagline { font-size: 19px; color: #93c5fd; font-weight: 500; line-height: 1.6; }
+
+        .auth-form-wrap {
+            flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px;
+            background: #f8fafc; border-top-left-radius: 36px; border-bottom-left-radius: 36px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+        }
+        .auth-box {
+            width: 100%; max-width: 440px; background: #fff; padding: 42px; border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08); border: 1px solid var(--border);
+        }
+        .auth-tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+        .auth-tab {
+            flex: 1; text-align: center; padding: 12px 0; font-size: 16px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px;
+        }
+        .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
+        .form-input, .form-select {
+            width: 100%; padding: 11px 14px; border: 1px solid #cbd5e1; border-radius: 8px;
+            font-size: 14px; color: var(--text-main); background: #fff; transition: 0.2s; outline: none;
+        }
+        .form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+
+        .btn-primary {
+            width: 100%; padding: 12px 18px; background: var(--primary); color: #fff; border: none;
+            border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .alert-banner {
+            padding: 11px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 18px; display: none;
+        }
+        .alert-error { background: var(--danger-bg); color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-success { background: var(--success-bg); color: #047857; border: 1px solid #a7f3d0; }
+
+        /* ================= 2. 智慧校园主系统布局 ================= */
+        #appLayout { display: none; min-height: 100vh; }
+        .sidebar {
+            width: 250px; background: var(--secondary); color: #fff; display: flex; flex-direction: column;
+            position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 22px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #1e293b;
+        }
+        .sidebar-brand-icon {
+            width: 36px; height: 36px; border-radius: 8px; background: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .sidebar-menu { padding: 20px 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .menu-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px;
+            color: #94a3b8; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .menu-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+
+        .sidebar-footer { padding: 16px; border-top: 1px solid #1e293b; font-size: 12px; color: #64748b; }
+
+        .main-wrapper { margin-left: 250px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar {
+            height: 68px; background: #fff; border-bottom: 1px solid var(--border); padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90;
+        }
+        .topbar-left h2 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
+        .user-pill { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 999px; background: var(--bg-body); }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
+        }
+        .btn-outline {
+            padding: 7px 14px; border: 1px solid var(--border); background: #fff; border-radius: 6px;
+            font-size: 13px; color: var(--text-main); cursor: pointer; transition: 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+        .content-area { padding: 28px 32px; flex: 1; }
+        .module-section { display: none; animation: fadeIn 0.25s ease; }
+        .module-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 通用卡片与网格 */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
+        .stat-box {
+            background: #fff; padding: 22px; border-radius: 14px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .stat-box h3 { font-size: 26px; font-weight: 800; color: var(--text-main); margin-top: 4px; }
+        .stat-box span { font-size: 13px; color: var(--text-muted); }
+        .stat-badge { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+
+        .grid-2col { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; }
+        .grid-sidebar-form { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+        .card { background: #fff; border-radius: 14px; border: 1px solid var(--border); padding: 24px; margin-bottom: 24px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        /* 表格与标签 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 13px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 600; font-size: 12px; }
+        tr:hover { background: #f8fafc; }
+
+        .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .badge-green { background: var(--success-bg); color: var(--success); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-blue { background: var(--primary-light); color: var(--primary); }
+        .badge-gray { background: #f1f5f9; color: #64748b; text-decoration: line-through; }
+
+        .btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-sm-primary { background: var(--primary); color: #fff; }
+        .btn-sm-primary:hover { background: var(--primary-dark); }
+        .btn-sm-success { background: var(--success); color: #fff; }
+        .btn-sm-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+        .btn-sm-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        /* 教室卡片网格 */
+        .room-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .room-card {
+            border: 1px solid var(--border); border-radius: 12px; padding: 18px; background: #fff;
+            transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .room-card:hover { border-color: var(--primary); box-shadow: 0 6px 16px rgba(37,99,235,0.08); }
+        .room-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .room-name { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .room-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+
+        /* 电子校园卡样式 */
+        .campus-id-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #fff;
+            border-radius: 16px; padding: 28px; position: relative; overflow: hidden;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+        }
+        .campus-id-card h4 { font-size: 18px; margin-bottom: 4px; }
+        .campus-id-card p { font-size: 13px; opacity: 0.85; }
+        .id-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+
+<!-- ==================== 1. 统一身份认证门户 ==================== -->
+<div id="authPortal">
+    <div class="auth-banner">
+        <div class="brand-header">
+            <div class="brand-logo">🎓</div>
+            <div class="brand-title">
+                <h1>CampusMate 智慧校园</h1>
+                <p>一站式数字化校园生活与教务服务平台</p>
+            </div>
+        </div>
+
+        <div class="banner-hero">
+            <h2>连接校园每一处场景，<br>开启数字化学习生活。</h2>
+            <p class="tagline">以技术赋能学习与生活，构建开放、敏捷、可信的高校数字服务生态体系。</p>
+        </div>
+
+        <div style="font-size: 12px; color: #64748b;">
+            © 2026 CampusMate 智慧校园信息化办公室 · 统一身份认证中心
+        </div>
+    </div>
+
+    <div class="auth-form-wrap">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">账号登录</div>
+                <div class="auth-tab" id="tabRegBtn" onclick="switchAuthTab('register')">新生注册</div>
+            </div>
+
+            <div id="authMessage" class="alert-banner"></div>
+
+            <!-- 登录表单 (US-02) -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">用户名 / 学工号</label>
+                    <input type="text" id="loginUsername" class="form-input" placeholder="请输入用户名 (如: zhangsan)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">登录密码</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="请输入登录密码" required>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" checked> 保持登录状态
+                    </label>
+                    <span style="color:var(--primary); cursor:pointer;" onclick="fillDefaultUser()">忘记密码？</span>
+                </div>
+                <button type="submit" class="btn-primary">登录智慧校园门户</button>
+            </form>
+
+            <!-- 注册表单 (Sprint 1 US-01: 用户名/密码/邮箱/姓名/学号/院系/手机号) -->
+            <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">登录用户名 *</label>
+                        <input type="text" id="regUsername" class="form-input" placeholder="字母或数字组合" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">登录密码 *</label>
+                        <input type="password" id="regPassword" class="form-input" placeholder="至少6位密码" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">真实姓名 *</label>
+                        <input type="text" id="regRealName" class="form-input" placeholder="如：王小明" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">学号 (8位) *</label>
+                        <input type="text" id="regStudentId" class="form-input" placeholder="如：20230108" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">所属学院 *</label>
+                    <select id="regDept" class="form-select" required>
+                        <option value="计算机科学与技术学院">计算机科学与技术学院</option>
+                        <option value="软件工程学院">软件工程学院</option>
+                        <option value="人工智能与数据科学学院">人工智能与数据科学学院</option>
+                        <option value="电子信息工程学院">电子信息工程学院</option>
+                        <option value="经济与管理学院">经济与管理学院</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">校园邮箱 *</label>
+                        <input type="email" id="regEmail" class="form-input" placeholder="name@campus.edu.cn" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">手机号码 *</label>
+                        <input type="tel" id="regPhone" class="form-input" placeholder="11位手机号" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:6px;">立即注册学籍账号</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 2. 登录后的智慧校园主平台 ==================== -->
+<div id="appLayout">
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">🎓</div>
+            <div>
+                <div style="font-size: 17px; font-weight: 700;">CampusMate</div>
+                <div style="font-size: 11px; color: #94a3b8;">智慧校园综合服务平台</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-item active" onclick="switchNav('dashboard', this)">
+                <span>📊</span> <span>校园工作台首页</span>
+            </div>
+            <div class="menu-item" onclick="switchNav('classroom', this)">
+                <span>🏛️</span> <span>空教室查询与预约</span>
+            </div>
+            <div class="menu-item" onclick="switchNav('course', this)">
+                <span>📚</span> <span>教务在线选课系统</span>
+            </div>
+            <div class="menu-item" onclick="switchNav('lostfound', this)">
+                <span>🔍</span> <span>校园失物招领中心</span>
+            </div>
+            <div class="menu-item" onclick="switchNav('profile', this)">
+                <span>👤</span> <span>个人学籍档案中心</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>系统状态：<span style="color:#10b981;">● 在线正常</span></div>
+            <div style="margin-top:4px;">当前学期：2026-2027学年第一学期</div>
+        </div>
+    </aside>
+
+    <!-- 右侧主内容区 -->
+    <div class="main-wrapper">
+        <!-- 顶部状态栏 -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h2 id="pageHeaderTitle">校园工作台首页</h2>
+            </div>
+            <div class="topbar-right">
+                <div class="user-pill">
+                    <div class="user-avatar" id="topUserAvatar">张</div>
+                    <div>
+                        <div style="font-size: 13px; font-weight: 700;" id="topUserName">张三</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="topUserDept">计算机科学与技术学院</div>
+                    </div>
+                </div>
+                <button class="btn-outline" onclick="handleLogout()">退出登录</button>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <!-- ========== 模块 1：校园工作台首页 ========== -->
+            <section id="sec-dashboard" class="module-section active">
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div>
+                            <span>已选课程学分</span>
+                            <h3 id="dashCredits">6.0 学分</h3>
+                        </div>
+                        <div class="stat-badge" style="background: var(--primary-light); color: var(--primary);">📚</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>
+                            <span>当前有效教室预约</span>
+                            <h3 id="dashBookings">1 间</h3>
+                        </div>
+                        <div class="stat-badge" style="background: var(--success-bg); color: var(--success);">🏛️</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>
+                            <span>失物招领待认领</span>
+                            <h3 id="dashUnclaimed">3 件</h3>
+                        </div>
+                        <div class="stat-badge" style="background: var(--warning-bg); color: var(--warning);">📢</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>
+                            <span>校园卡账户状态</span>
+                            <h3 style="color: var(--success); font-size: 20px;">正常 (已实名)</h3>
+                        </div>
+                        <div class="stat-badge" style="background: #f3e8ff; color: #9333ea;">💳</div>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📅 今日课程与预约日程</h3>
+                            <span class="badge badge-blue">星期二</span>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>时间段</th>
+                                <th>事项名称</th>
+                                <th>地点</th>
+                                <th>类型</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>08:00 - 09:40</td>
+                                <td><b>软件工程与敏捷开发实践</b></td>
+                                <td>信息楼 B-302</td>
+                                <td><span class="badge badge-blue">必修课</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:00 - 11:40</td>
+                                <td><b>算法设计与分析</b></td>
+                                <td>第一教学楼 A-205</td>
+                                <td><span class="badge badge-blue">必修课</span></td>
+                            </tr>
+                            <tr>
+                                <td>14:00 - 16:00</td>
+                                <td><b>小组 Sprint 2 项目研讨</b></td>
+                                <td>图书馆三楼研讨室 301</td>
+                                <td><span class="badge badge-green">教室预约</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🔔 校园最新通知公告</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
+                            <div style="padding-bottom:12px; border-bottom:1px solid var(--border);">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <b style="color:var(--primary);">[教务处] 2026秋季学期通识选修课补退选通知</b>
+                                    <span style="color:var(--text-muted);">10-20</span>
+                                </div>
+                                <p style="color:var(--text-muted);">请各位同学及时登录在线选课系统完成本学期选修课学分确认。</p>
+                            </div>
+                            <div style="padding-bottom:12px; border-bottom:1px solid var(--border);">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <b>[后勤保卫处] 图书馆及实验楼失物招领集中认领公告</b>
+                                    <span style="color:var(--text-muted);">10-18</span>
+                                </div>
+                                <p style="color:var(--text-muted);">近期拾获多张校园卡及蓝牙耳机，请遗失物品的同学通过失物招领中心在线核验认领。</p>
+                            </div>
+                            <div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <b>[信息化办] 智慧教室晚间自习预约开放说明</b>
+                                    <span style="color:var(--text-muted);">10-15</span>
+                                </div>
+                                <p style="color:var(--text-muted);">每日 18:00-22:00 空闲多媒体教室全面向学生开放线上预约使用。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 模块 2：空教室查询与预约系统 ========== -->
+            <section id="sec-classroom" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🏛️ 实时空教室检索与筛选</h3>
+                        <div style="display:flex; gap:12px;">
+                            <select id="filterBuilding" class="form-select" style="width:180px;" onchange="renderClassrooms()">
+                                <option value="ALL">全部教学楼</option>
+                                <option value="第一教学楼">第一教学楼</option>
+                                <option value="计算机科研楼">计算机科研楼</option>
+                                <option value="图书馆研讨区">图书馆研讨区</option>
+                            </select>
+                            <select id="filterSlot" class="form-select" style="width:200px;" onchange="renderClassrooms()">
+                                <option value="ALL">全部时段</option>
+                                <option value="上午 (08:00-12:00)">上午 (08:00-12:00)</option>
+                                <option value="下午 (14:00-18:00)">下午 (14:00-18:00)</option>
+                                <option value="晚间 (18:30-22:00)">晚间 (18:30-22:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="room-grid" id="classroomGrid"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📋 我的教室预约记录</h3>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>预约编号</th>
+                            <th>教室名称</th>
+                            <th>所属楼宇</th>
+                            <th>预约时段</th>
+                            <th>预约用途</th>
+                            <th>预约人</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="myBookingTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ========== 模块 3：教务在线选课系统 ========== -->
+            <section id="sec-course" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📚 2026-2027学年第一学期 · 全校可选课程列表</h3>
+                        <div>
+                            <input type="text" id="courseSearchInput" class="form-input" style="width:260px;" placeholder="搜索课程名称或授课教师..." onkeyup="renderCourses()">
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>课程代码</th>
+                            <th>课程名称</th>
+                            <th>课程性质</th>
+                            <th>授课教师</th>
+                            <th>上课时间与地点</th>
+                            <th>学分</th>
+                            <th>课容量 (已选/上限)</th>
+                            <th>选课操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="courseListTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>✅ 我已选修的课程表</h3>
+                        <span class="badge badge-green" id="selectedCreditSummary">当前累计已选：6.0 学分</span>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>课程代码</th>
+                            <th>课程名称</th>
+                            <th>授课教师</th>
+                            <th>上课安排</th>
+                            <th>学分</th>
+                            <th>选课状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="myCourseTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ========== 模块 4：校园失物招领中心 (Sprint 2 核心) ========== -->
+            <section id="sec-lostfound" class="module-section">
+                <div class="grid-sidebar-form">
+                    <!-- 左侧登记表单 (SUB-201) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📢 登记发布拾获物品</h3>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+                            拾获校园内遗失物品请在此登记，发布后初始状态自动设为「待认领」。
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label">物品名称 *</label>
+                            <input type="text" id="lfTitle" class="form-input" placeholder="如：黑色索尼降噪耳机">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">拾获具体地点 *</label>
+                            <input type="text" id="lfLocation" class="form-input" placeholder="如：图书馆三楼东侧自习区">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">物品特征描述</label>
+                            <input type="text" id="lfDesc" class="form-input" placeholder="如：保护壳上有卡通贴纸">
+                        </div>
+                        <button class="btn-primary" onclick="publishLostItem()">提交发布失物信息</button>
+                    </div>
+
+                    <!-- 右侧搜索与认领大厅 (SUB-202 & SUB-203) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🔍 全校失物招领实时列表</h3>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="lfSearchKw" class="form-input" style="width:240px;" placeholder="输入物品名、地点或特征搜索..." onkeyup="if(event.key==='Enter') searchLostItems()">
+                                <button class="btn-sm btn-sm-primary" onclick="searchLostItems()">搜索</button>
+                                <button class="btn-sm btn-outline" onclick="resetLostSearch()">重置</button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>物品名称与特征</th>
+                                <th>拾获地点</th>
+                                <th>发布同学</th>
+                                <th>发布时间</th>
+                                <th>当前状态</th>
+                                <th>认领归属人</th>
+                                <th>认领操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="lostFoundTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 模块 5：个人学籍档案中心 (Sprint 1 US-03) ========== -->
+            <section id="sec-profile" class="module-section">
+                <div class="grid-2col">
+                    <!-- 左侧：当前登录学生的实名学籍档案 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>👤 我的实名学籍档案 (UserProfile)</h3>
+                            <span class="badge badge-green">学籍状态：在籍注册</span>
+                        </div>
+
+                        <div class="campus-id-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h4 id="cardRealName">张三</h4>
+                                    <p id="cardDept">计算机科学与技术学院 · 本科生</p>
+                                </div>
+                                <div style="font-size:32px;">🎓</div>
+                            </div>
+                            <div class="id-grid">
+                                <div>学号：<b id="cardStuId">20230001</b></div>
+                                <div>系统编号：<b id="cardUserId">UID-1</b></div>
+                                <div>联系电话：<b id="cardPhone">13800138000</b></div>
+                                <div>电子邮箱：<b id="cardEmail">zhangsan@campus.edu.cn</b></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：学籍档案接口核验查询 (US-03) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🔎 校友/学生学籍档案核验查询 (US-03)</h3>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+                            输入系统用户编号 (UserID) 查询核对平台绑定的实名学籍档案资料（可输入 1、2 查询有效用户，或输入 99 验证不存在用户的防错拦截）。
+                        </p>
+                        <div style="display:flex; gap:10px; margin-bottom:20px;">
+                            <input type="number" id="queryUserIdInput" class="form-input" placeholder="请输入要查询的 UserID (例如: 1 或 2)" value="1">
+                            <button class="btn-primary" style="width:140px;" onclick="queryProfileById()">查询档案</button>
+                        </div>
+
+                        <div id="profileQueryResult" style="padding:18px; border-radius:10px; border:1px solid var(--border); background:#f8fafc; font-size:14px;">
+                            请点击上方“查询档案”按钮核验学籍信息。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+    // ==================== 核心数据库状态 ====================
+    const STATE = {
+        currentUser: null,
+        token: null,
+        users: [
+            {
+                id: 1,
+                username: "zhangsan",
+                password: "Pass123456",
+                email: "zhangsan@campus.edu.cn",
+                role: "STUDENT",
+                profile: {
+                    realName: "张三",
+                    studentId: "20230001",
+                    department: "计算机科学与技术学院",
+                    phone: "13800138000"
+                }
+            },
+            {
+                id: 2,
+                username: "lisi",
+                password: "Pass123456",
+                email: "lisi@campus.edu.cn",
+                role: "STUDENT",
+                profile: {
+                    realName: "李四",
+                    studentId: "20230002",
+                    department: "软件工程学院",
+                    phone: "13900139000"
+                }
+            }
+        ],
+        classrooms: [
+            { id: 101, roomNo: "一教 A-104", building: "第一教学楼", capacity: 60, equip: "4K投影 / 智慧黑板 / 空调", slot: "上午 (08:00-12:00)", status: "FREE", bookedBy: null, purpose: null },
+            { id: 102, roomNo: "一教 A-208", building: "第一教学楼", capacity: 120, equip: "双屏阶梯教室 / 无线麦", slot: "下午 (14:00-18:00)", status: "FREE", bookedBy: null, purpose: null },
+            { id: 103, roomNo: "计科楼 B-305", building: "计算机科研楼", capacity: 45, equip: "高性能图形工作站 / 投影", slot: "下午 (14:00-18:00)", status: "FREE", bookedBy: null, purpose: null },
+            { id: 104, roomNo: "计科楼 B-412", building: "计算机科研楼", capacity: 80, equip: "智慧录播系统 / 分组屏", slot: "晚间 (18:30-22:00)", status: "FREE", bookedBy: null, purpose: null },
+            { id: 105, roomNo: "图书馆研讨室 301", building: "图书馆研讨区", capacity: 12, equip: "触控交互白板 / 静音舱", slot: "下午 (14:00-18:00)", status: "BOOKED", bookedBy: "张三", purpose: "小组 Sprint 2 项目研讨" },
+            { id: 106, roomNo: "图书馆研讨室 305", building: "图书馆研讨区", capacity: 8, equip: "高清投屏电视 / 独立空调", slot: "晚间 (18:30-22:00)", status: "FREE", bookedBy: null, purpose: null }
+        ],
+        courses: [
+            { code: "CS301", name: "软件工程与敏捷开发", type: "专业核心课", teacher: "林教授", schedule: "周二 1-2节 · 信息楼B302", credits: 3.0, enrolled: 42, capacity: 50, selected: true },
+            { code: "CS305", name: "分布式系统与微服务架构", type: "专业选修课", teacher: "陈副教授", schedule: "周三 3-4节 · 计科楼B305", credits: 3.0, enrolled: 38, capacity: 45, selected: true },
+            { code: "AI204", name: "大模型应用与提示词工程", type: "全校通识课", teacher: "周博士", schedule: "周四 7-8节 · 一教A208", credits: 2.0, enrolled: 88, capacity: 90, selected: false },
+            { code: "SE210", name: "DevOps与持续交付流水线", type: "专业选修课", teacher: "王高工", schedule: "周五 5-6节 · 计科楼B412", credits: 2.5, enrolled: 29, capacity: 40, selected: false },
+            { code: "GE108", name: "近代中国社会发展史导论", type: "人文通识课", teacher: "赵教授", schedule: "周一 9-10节 · 一教A104", credits: 2.0, enrolled: 60, capacity: 60, selected: false }
+        ],
+        lostItems: [
+            { id: 1, title: "校园一卡通 (学号: 20230001)", desc: "蓝色挂绳卡套，内含饭卡", location: "图书馆三楼自习室", publisher: "zhangsan", time: "2026-10-20 09:15", status: "UNCLAIMED", claimant: null },
+            { id: 2, title: "苹果 AirPods Pro 蓝牙耳机", desc: "白色充电盒，外壳贴有宇航员贴纸", location: "第二食堂一楼快餐区", publisher: "lisi", time: "2026-10-20 10:30", status: "UNCLAIMED", claimant: null },
+            { id: 3, title: "罗技无线鼠标与接收器", desc: "黑色磨砂材质，留在机房电脑旁", location: "计算机科研楼 B-305", publisher: "zhangsan", time: "2026-10-19 16:40", status: "UNCLAIMED", claimant: null }
+        ]
+    };
+
+    // ==================== 通用轻提示 ====================
+    function showToast(message, type = "info") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span>${message}</span><span style="cursor:pointer;margin-left:12px;color:#94a3b8;" onclick="this.parentElement.remove()">✕</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 3500);
+    }
+
+    function showAuthBanner(msg, isError = true) {
+        const el = document.getElementById("authMessage");
+        el.style.display = "block";
+        el.className = `alert-banner ${isError ? "alert-error" : "alert-success"}`;
+        el.innerText = msg;
+    }
+
+    // ==================== 1. 登录与注册切换及逻辑 ====================
+    function switchAuthTab(tab) {
+        document.getElementById("authMessage").style.display = "none";
+        if (tab === "login") {
+            document.getElementById("tabLoginBtn").classList.add("active");
+            document.getElementById("tabRegBtn").classList.remove("active");
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("registerForm").style.display = "none";
+        } else {
+            document.getElementById("tabLoginBtn").classList.remove("active");
+            document.getElementById("tabRegBtn").classList.add("active");
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("registerForm").style.display = "block";
+        }
+    }
+
+    function fillDefaultUser() {
+        document.getElementById("loginUsername").value = "zhangsan";
+        document.getElementById("loginPassword").value = "Pass123456";
+        showToast("已为您自动填入找回的默认账号凭证", "success");
+    }
+
+    function handleRegister(e) {
+        e.preventDefault();
+        const username = document.getElementById("regUsername").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+        const realName = document.getElementById("regRealName").value.trim();
+        const studentId = document.getElementById("regStudentId").value.trim();
+        const department = document.getElementById("regDept").value;
+        const email = document.getElementById("regEmail").value.trim();
+        const phone = document.getElementById("regPhone").value.trim();
+
+        const exists = STATE.users.some(u => u.username.toLowerCase() === username.toLowerCase());
+        if (exists) {
+            showAuthBanner("注册失败 (状态码 400)：该用户名已被占用 (Username already exists.)，请更换用户名！", true);
+            showToast("注册被拦截：用户名已存在 (HTTP 400)", "error");
+            return;
+        }
+
+        const newUser = {
+            id: STATE.users.length + 1,
+            username,
+            password,
+            email,
+            role: "STUDENT",
+            profile: { realName, studentId, department, phone }
+        };
+        STATE.users.push(newUser);
+
+        showAuthBanner(`注册成功 (状态码 200)！欢迎你，${realName} 同学，请使用刚注册的账号登录。`, false);
+        showToast("学籍账号注册成功！请登录", "success");
+        document.getElementById("loginUsername").value = username;
+        document.getElementById("loginPassword").value = "";
+        setTimeout(() => switchAuthTab("login"), 1200);
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const u = document.getElementById("loginUsername").value.trim();
+        const p = document.getElementById("loginPassword").value.trim();
+
+        const matchedUser = STATE.users.find(user => user.username === u && user.password === p);
+        if (!matchedUser) {
+            showAuthBanner("登录失败 (状态码 401)：用户名不存在或密码错误 (Invalid username or password.)！", true);
+            showToast("认证失败：账号或密码错误 (HTTP 401)", "error");
+            return;
+        }
+
+        STATE.currentUser = matchedUser;
+        STATE.token = "JWT_TOKEN_" + Math.random().toString(36).substring(2, 10).toUpperCase() + "_" + matchedUser.id;
+
+        document.getElementById("authPortal").style.display = "none";
+        document.getElementById("appLayout").style.display = "flex";
+
+        initUserDashboard();
+        showToast(`欢迎回来，${matchedUser.profile.realName} 同学！`, "success");
+    }
+
+    function handleLogout() {
+        STATE.currentUser = null;
+        STATE.token = null;
+        document.getElementById("appLayout").style.display = "none";
+        document.getElementById("authPortal").style.display = "flex";
+        document.getElementById("loginPassword").value = "";
+        document.getElementById("authMessage").style.display = "none";
+        showToast("您已安全退出智慧校园服务平台", "info");
+    }
+
+    // ==================== 2. 主平台导航与数据同步 ====================
+    function switchNav(sectionId, menuEl) {
+        document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("active"));
+        menuEl.classList.add("active");
+
+        document.querySelectorAll(".module-section").forEach(sec => sec.classList.remove("active"));
+        document.getElementById("sec-" + sectionId).classList.add("active");
+
+        const titles = {
+            dashboard: "校园工作台首页",
+            classroom: "空教室查询与实时预约系统",
+            course: "教务在线选课系统",
+            lostfound: "校园失物招领中心",
+            profile: "个人实名学籍档案中心"
+        };
+        document.getElementById("pageHeaderTitle").innerText = titles[sectionId];
+    }
+
+    function initUserDashboard() {
+        const u = STATE.currentUser;
+        document.getElementById("topUserName").innerText = u.profile.realName;
+        document.getElementById("topUserDept").innerText = `${u.profile.department} · ${u.profile.studentId}`;
+        document.getElementById("topUserAvatar").innerText = u.profile.realName.charAt(0);
+
+        document.getElementById("cardRealName").innerText = u.profile.realName;
+        document.getElementById("cardDept").innerText = `${u.profile.department} · 在读学生`;
+        document.getElementById("cardStuId").innerText = u.profile.studentId;
+        document.getElementById("cardUserId").innerText = `UID-${u.id}`;
+        document.getElementById("cardPhone").innerText = u.profile.phone;
+        document.getElementById("cardEmail").innerText = u.email;
+
+        renderClassrooms();
+        renderCourses();
+        renderLostItems();
+        updateDashboardCounters();
+        queryProfileById();
+    }
+
+    function updateDashboardCounters() {
+        const totalCredits = STATE.courses.filter(c => c.selected).reduce((sum, c) => sum + c.credits, 0);
+        const myBookings = STATE.classrooms.filter(r => r.status === "BOOKED").length;
+        const unclaimedCount = STATE.lostItems.filter(i => i.status === "UNCLAIMED").length;
+
+        document.getElementById("dashCredits").innerText = `${totalCredits.toFixed(1)} 学分`;
+        document.getElementById("dashBookings").innerText = `${myBookings} 间`;
+        document.getElementById("dashUnclaimed").innerText = `${unclaimedCount} 件`;
+    }
+
+    function renderClassrooms() {
+        const bFilter = document.getElementById("filterBuilding").value;
+        const sFilter = document.getElementById("filterSlot").value;
+
+        const filtered = STATE.classrooms.filter(r => {
+            const matchB = bFilter === "ALL" || r.building === bFilter;
+            const matchS = sFilter === "ALL" || r.slot === sFilter;
+            return matchB && matchS;
+        });
+
+        const grid = document.getElementById("classroomGrid");
+        grid.innerHTML = "";
+        filtered.forEach(room => {
+            const isFree = room.status === "FREE";
+            const card = document.createElement("div");
+            card.className = "room-card";
+            card.innerHTML = `
+                <div>
+                    <div class="room-top">
+                        <div>
+                            <div class="room-name">${room.roomNo}</div>
+                            <span style="font-size:12px; color:var(--text-muted);">${room.building}</span>
+                        </div>
+                        <span class="badge ${isFree ? 'badge-green' : 'badge-yellow'}">${isFree ? '空闲可预约' : '已预约占用'}</span>
+                    </div>
+                    <div class="room-meta">
+                        <div>🕒 开放时段：<b>${room.slot}</b></div>
+                        <div>👥 容纳人数：${room.capacity} 人</div>
+                        <div>💻 设备配置：${room.equip}</div>
+                    </div>
+                </div>
+                <div>
+                    ${isFree
+                ? `<button class="btn-primary" style="padding:8px 12px; font-size:13px;" onclick="bookClassroom(${room.id})">立即申请预约</button>`
+                : `<button class="btn-sm btn-sm-disabled" style="width:100%; padding:8px 12px;">已被 ${room.bookedBy} 预约</button>`
+            }
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        const tbody = document.getElementById("myBookingTable");
+        tbody.innerHTML = "";
+        const bookedList = STATE.classrooms.filter(r => r.status === "BOOKED");
+        bookedList.forEach(r => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#BK-${r.id}</td>
+                <td><b>${r.roomNo}</b></td>
+                <td>${r.building}</td>
+                <td>${r.slot}</td>
+                <td>${r.purpose}</td>
+                <td>${r.bookedBy}</td>
+                <td><span class="badge badge-green">预约生效中</span></td>
+                <td><button class="btn-sm btn-sm-danger" onclick="cancelClassroom(${r.id})">取消预约</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+        updateDashboardCounters();
+    }
+
+    function bookClassroom(id) {
+        const room = STATE.classrooms.find(r => r.id === id);
+        if (!room || room.status !== "FREE") return;
+
+        const purpose = prompt(`您正在预约【${room.roomNo}】（${room.slot}）\n请输入预约使用事由：`, "学术研讨与课程自习");
+        if (!purpose) return;
+
+        room.status = "BOOKED";
+        room.bookedBy = STATE.currentUser.profile.realName;
+        room.purpose = purpose;
+
+        renderClassrooms();
+        showToast(`预约成功！已为您锁定 ${room.roomNo}`, "success");
+    }
+
+    function cancelClassroom(id) {
+        const room = STATE.classrooms.find(r => r.id === id);
+        if (!room) return;
+        room.status = "FREE";
+        room.bookedBy = null;
+        room.purpose = null;
+        renderClassrooms();
+        showToast(`已取消 ${room.roomNo} 的教室预约，资源已释放`, "info");
+    }
+
+    function renderCourses() {
+        const kw = document.getElementById("courseSearchInput").value.trim().toLowerCase();
+        const tbody = document.getElementById("courseListTable");
+        tbody.innerHTML = "";
+
+        STATE.courses
+            .filter(c => c.name.toLowerCase().includes(kw) || c.teacher.toLowerCase().includes(kw) || c.code.toLowerCase().includes(kw))
+            .forEach(c => {
+                const isFull = c.enrolled >= c.capacity;
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><b>${c.code}</b></td>
+                    <td><b>${c.name}</b></td>
+                    <td><span class="badge badge-blue">${c.type}</span></td>
+                    <td>${c.teacher}</td>
+                    <td>${c.schedule}</td>
+                    <td><b>${c.credits.toFixed(1)}</b></td>
+                    <td>
+                        <span style="color:${isFull ? 'var(--danger)' : 'var(--text-main)'}; font-weight:600;">
+                            ${c.enrolled} / ${c.capacity}
+                        </span>
+                    </td>
+                    <td>
+                        ${c.selected
+                    ? `<span class="badge badge-green">已选修</span>`
+                    : (isFull
+                        ? `<button class="btn-sm btn-sm-disabled">名额已满</button>`
+                        : `<button class="btn-sm btn-sm-primary" onclick="selectCourse('${c.code}')">选课</button>`)
+                }
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        const myBody = document.getElementById("myCourseTable");
+        myBody.innerHTML = "";
+        let totalCredits = 0;
+        STATE.courses.filter(c => c.selected).forEach(c => {
+            totalCredits += c.credits;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${c.code}</td>
+                <td><b>${c.name}</b></td>
+                <td>${c.teacher}</td>
+                <td>${c.schedule}</td>
+                <td>${c.credits.toFixed(1)} 学分</td>
+                <td><span class="badge badge-green">正选已确认</span></td>
+                <td><button class="btn-sm btn-sm-danger" onclick="dropCourse('${c.code}')">退课</button></td>
+            `;
+            myBody.appendChild(tr);
+        });
+        document.getElementById("selectedCreditSummary").innerText = `当前累计已选：${totalCredits.toFixed(1)} 学分`;
+        updateDashboardCounters();
+    }
+
+    function selectCourse(code) {
+        const course = STATE.courses.find(c => c.code === code);
+        if (!course || course.selected) return;
+        if (course.enrolled >= course.capacity) {
+            showToast("选课失败：该课程课容量已满！", "error");
+            return;
+        }
+        course.selected = true;
+        course.enrolled += 1;
+        renderCourses();
+        showToast(`选课成功！《${course.name}》已加入您的课表`, "success");
+    }
+
+    function dropCourse(code) {
+        const course = STATE.courses.find(c => c.code === code);
+        if (!course || !course.selected) return;
+        course.selected = false;
+        course.enrolled -= 1;
+        renderCourses();
+        showToast(`已成功退选《${course.name}》`, "info");
+    }
+
+    function renderLostItems(list = STATE.lostItems) {
+        const tbody = document.getElementById("lostFoundTable");
+        tbody.innerHTML = "";
+
+        list.forEach(item => {
+            const isUnclaimed = item.status === "UNCLAIMED";
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#LF-${item.id}</td>
+                <td>
+                    <b>${item.title}</b>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${item.desc}</div>
+                </td>
+                <td>${item.location}</td>
+                <td>${item.publisher}</td>
+                <td style="font-size:12px; color:var(--text-muted);">${item.time}</td>
+                <td>
+                    <span class="badge ${isUnclaimed ? 'badge-yellow' : 'badge-gray'}">
+                        ${isUnclaimed ? '待认领 (UNCLAIMED)' : '已归还 (CLAIMED)'}
+                    </span>
+                </td>
+                <td>${item.claimant ? `<b style="color:var(--primary);">${item.claimant}</b>` : '<span style="color:#94a3b8;">暂无</span>'}</td>
+                <td>
+                    ${isUnclaimed
+                ? `<button class="btn-sm btn-sm-success" onclick="claimLostItem(${item.id})">实名认领</button>`
+                : `<button class="btn-sm btn-outline" onclick="claimLostItem(${item.id})">已结单 (核验)</button>`
+            }
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        updateDashboardCounters();
+    }
+
+    function publishLostItem() {
+        const title = document.getElementById("lfTitle").value.trim();
+        const location = document.getElementById("lfLocation").value.trim();
+        const desc = document.getElementById("lfDesc").value.trim();
+
+        if (!title || !location) {
+            showToast("发布失败 (状态码 400)：物品名称和拾获地点不能为空！", "error");
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+        const newItem = {
+            id: STATE.lostItems.length + 1,
+            title,
+            location,
+            desc: desc || "拾获同学未填写附加描述",
+            publisher: STATE.currentUser.profile.realName,
+            time: timeStr,
+            status: "UNCLAIMED",
+            claimant: null
+        };
+        STATE.lostItems.unshift(newItem);
+
+        document.getElementById("lfTitle").value = "";
+        document.getElementById("lfLocation").value = "";
+        document.getElementById("lfDesc").value = "";
+
+        renderLostItems();
+        showToast(`失物登记成功！初始状态已设为【待认领】`, "success");
+    }
+
+    function searchLostItems() {
+        const kw = document.getElementById("lfSearchKw").value.trim().toLowerCase();
+        const filtered = STATE.lostItems.filter(i =>
+            i.title.toLowerCase().includes(kw) ||
+            i.location.toLowerCase().includes(kw) ||
+            i.desc.toLowerCase().includes(kw)
+        );
+        renderLostItems(filtered);
+        showToast(`检索完成：共匹配到 ${filtered.length} 条失物记录`, "info");
+    }
+
+    function resetLostSearch() {
+        document.getElementById("lfSearchKw").value = "";
+        renderLostItems();
+    }
+
+    function claimLostItem(id) {
+        const item = STATE.lostItems.find(i => i.id === id);
+        if (!item) return;
+
+        if (item.status === "CLAIMED") {
+            showToast(`操作拦截 (状态码 400)：该物品已被【${item.claimant}】认领归还，不可重复认领！`, "error");
+            return;
+        }
+
+        const claimantName = prompt(`您正在认领【${item.title}】\n请确认认领人姓名与学号：`, `${STATE.currentUser.profile.realName} (${STATE.currentUser.profile.studentId})`);
+        if (!claimantName) return;
+
+        item.status = "CLAIMED";
+        item.claimant = claimantName;
+        renderLostItems();
+        showToast(`认领成功！物品状态已更新为【已归还 (CLAIMED)】`, "success");
+    }
+
+    function queryProfileById() {
+        const idVal = parseInt(document.getElementById("queryUserIdInput").value, 10);
+        const resultBox = document.getElementById("profileQueryResult");
+
+        const targetUser = STATE.users.find(u => u.id === idVal);
+        if (targetUser) {
+            resultBox.style.borderColor = "#a7f3d0";
+            resultBox.style.background = "#ecfdf5";
+            resultBox.innerHTML = `
+                <div style="color:#047857; font-weight:700; margin-bottom:10px;">
+                    ✅ 查询成功 (状态码 200) · 已返回 UserProfile 完整实体数据
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; color:#1e293b; font-size:13px;">
+                    <div><b>系统编号 (UserID)：</b> ${targetUser.id}</div>
+                    <div><b>登录用户名：</b> ${targetUser.username}</div>
+                    <div><b>真实姓名：</b> ${targetUser.profile.realName}</div>
+                    <div><b>学号 (StudentID)：</b> ${targetUser.profile.studentId}</div>
+                    <div><b>所属学院：</b> ${targetUser.profile.department}</div>
+                    <div><b>联系电话：</b> ${targetUser.profile.phone}</div>
+                    <div style="grid-column:span 2;"><b>校园邮箱：</b> ${targetUser.email}</div>
+                </div>
+            `;
+        } else {
+            resultBox.style.borderColor = "#fecaca";
+            resultBox.style.background = "#fef2f2";
+            resultBox.innerHTML = `
+                <div style="color:#b91c1c; font-weight:700; margin-bottom:6px;">
+                    ❌ 查询拦截 (状态码 404 Not Found)
+                </div>
+                <div style="color:#7f1d1d; font-size:13px;">
+                    系统中不存在 UserID 为 <b>${idVal}</b> 的学籍档案记录 (User profile not found.)，请核对后重新输入！
+                </div>
+            `;
+            showToast(`查询失败：UserID ${idVal} 不存在 (HTTP 404)`, "error");
+        }
+    }
+</script>
+
+</body>
+</html>
