@@ -1,4 +1,4 @@
-﻿name: CampusMate CI/CD Pipeline (Sprint 2)
+name: CampusMate CI/CD Pipeline (Sprint 2)
 
 on:
   push:
@@ -23,6 +23,8 @@ jobs:
       - name: 3. Compile Java Source Code
         run: |
           mkdir -p target/classes
+          # ???? Windows ??? \ufeff (UTF-8 BOM) ??
+          find src -name "*.java" -exec sed -i '1s/^\xEF\xBB\xBF//' {} +
           javac -encoding UTF-8 -d target/classes $(find src -name "*.java")
 
       - name: 4. Run Automated Test Suite (Sprint2TestRunner)
