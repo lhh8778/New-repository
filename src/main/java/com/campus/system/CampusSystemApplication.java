@@ -14,7 +14,8 @@ import com.campus.system.repository.InMemoryLostAndFoundRepository;
 import com.campus.system.repository.InMemoryUserRepository;
 import com.campus.system.service.impl.LostAndFoundServiceImpl;
 import com.campus.system.service.impl.UserServiceImpl;
-
+import com.campus.system.repository.LostAndFoundRepository;
+import com.campus.system.repository.MySqlLostAndFoundRepository;
 import java.util.List;
 
 public class CampusSystemApplication {
@@ -25,7 +26,7 @@ public class CampusSystemApplication {
 
         // 初始化分层依赖
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
-        InMemoryLostAndFoundRepository lostRepo = new InMemoryLostAndFoundRepository();
+        LostAndFoundRepository lostRepo = new MySqlLostAndFoundRepository();
         AuthController authController = new AuthController(new UserServiceImpl(userRepo));
         UserController userController = new UserController(new UserServiceImpl(userRepo));
         LostAndFoundController lostController = new LostAndFoundController(new LostAndFoundServiceImpl(lostRepo));

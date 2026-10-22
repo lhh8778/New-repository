@@ -235,7 +235,6 @@
 
             <div id="authMessage" class="alert-banner"></div>
 
-            <!-- 登录表单 (US-02) -->
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label class="form-label">用户名 / 学工号</label>
@@ -254,7 +253,6 @@
                 <button type="submit" class="btn-primary">登录智慧校园门户</button>
             </form>
 
-            <!-- 注册表单 (Sprint 1 US-01: 用户名/密码/邮箱/姓名/学号/院系/手机号) -->
             <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
                 <div class="form-row">
                     <div class="form-group">
@@ -304,7 +302,6 @@
 
 <!-- ==================== 2. 登录后的智慧校园主平台 ==================== -->
 <div id="appLayout">
-    <!-- 左侧导航栏 -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="sidebar-brand-icon">🎓</div>
@@ -338,9 +335,7 @@
         </div>
     </aside>
 
-    <!-- 右侧主内容区 -->
     <div class="main-wrapper">
-        <!-- 顶部状态栏 -->
         <header class="topbar">
             <div class="topbar-left">
                 <h2 id="pageHeaderTitle">校园工作台首页</h2>
@@ -358,27 +353,27 @@
         </header>
 
         <main class="content-area">
-            <!-- ========== 模块 1：校园工作台首页 ========== -->
+            <!-- 模块 1：首页 -->
             <section id="sec-dashboard" class="module-section active">
                 <div class="stats-row">
                     <div class="stat-box">
                         <div>
                             <span>已选课程学分</span>
-                            <h3 id="dashCredits">6.0 学分</h3>
+                            <h3 id="dashCredits">0.0 学分</h3>
                         </div>
                         <div class="stat-badge" style="background: var(--primary-light); color: var(--primary);">📚</div>
                     </div>
                     <div class="stat-box">
                         <div>
                             <span>当前有效教室预约</span>
-                            <h3 id="dashBookings">1 间</h3>
+                            <h3 id="dashBookings">0 间</h3>
                         </div>
                         <div class="stat-badge" style="background: var(--success-bg); color: var(--success);">🏛️</div>
                     </div>
                     <div class="stat-box">
                         <div>
                             <span>失物招领待认领</span>
-                            <h3 id="dashUnclaimed">3 件</h3>
+                            <h3 id="dashUnclaimed">0 件</h3>
                         </div>
                         <div class="stat-badge" style="background: var(--warning-bg); color: var(--warning);">📢</div>
                     </div>
@@ -460,7 +455,7 @@
                 </div>
             </section>
 
-            <!-- ========== 模块 2：空教室查询与预约系统 ========== -->
+            <!-- 模块 2：教室预约 -->
             <section id="sec-classroom" class="module-section">
                 <div class="card">
                     <div class="card-header">
@@ -505,7 +500,7 @@
                 </div>
             </section>
 
-            <!-- ========== 模块 3：教务在线选课系统 ========== -->
+            <!-- 模块 3：选课系统 -->
             <section id="sec-course" class="module-section">
                 <div class="card">
                     <div class="card-header">
@@ -534,7 +529,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>✅ 我已选修的课程表</h3>
-                        <span class="badge badge-green" id="selectedCreditSummary">当前累计已选：6.0 学分</span>
+                        <span class="badge badge-green" id="selectedCreditSummary">当前累计已选：0.0 学分</span>
                     </div>
                     <table>
                         <thead>
@@ -553,10 +548,9 @@
                 </div>
             </section>
 
-            <!-- ========== 模块 4：校园失物招领中心 (Sprint 2 核心) ========== -->
+            <!-- 模块 4：失物招领 -->
             <section id="sec-lostfound" class="module-section">
                 <div class="grid-sidebar-form">
-                    <!-- 左侧登记表单 (SUB-201) -->
                     <div class="card">
                         <div class="card-header">
                             <h3>📢 登记发布拾获物品</h3>
@@ -579,7 +573,6 @@
                         <button class="btn-primary" onclick="publishLostItem()">提交发布失物信息</button>
                     </div>
 
-                    <!-- 右侧搜索与认领大厅 (SUB-202 & SUB-203) -->
                     <div class="card">
                         <div class="card-header">
                             <h3>🔍 全校失物招领实时列表</h3>
@@ -608,10 +601,9 @@
                 </div>
             </section>
 
-            <!-- ========== 模块 5：个人学籍档案中心 (Sprint 1 US-03) ========== -->
+            <!-- 模块 5：个人实名学籍档案中心 (已移除多余的核验查询部分) -->
             <section id="sec-profile" class="module-section">
-                <div class="grid-2col">
-                    <!-- 左侧：当前登录学生的实名学籍档案 -->
+                <div style="max-width: 680px; margin: 0 auto;">
                     <div class="card">
                         <div class="card-header">
                             <h3>👤 我的实名学籍档案 (UserProfile)</h3>
@@ -634,24 +626,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- 右侧：学籍档案接口核验查询 (US-03) -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>🔎 校友/学生学籍档案核验查询 (US-03)</h3>
-                        </div>
-                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                            输入系统用户编号 (UserID) 查询核对平台绑定的实名学籍档案资料（可输入 1、2 查询有效用户，或输入 99 验证不存在用户的防错拦截）。
-                        </p>
-                        <div style="display:flex; gap:10px; margin-bottom:20px;">
-                            <input type="number" id="queryUserIdInput" class="form-input" placeholder="请输入要查询的 UserID (例如: 1 或 2)" value="1">
-                            <button class="btn-primary" style="width:140px;" onclick="queryProfileById()">查询档案</button>
-                        </div>
-
-                        <div id="profileQueryResult" style="padding:18px; border-radius:10px; border:1px solid var(--border); background:#f8fafc; font-size:14px;">
-                            请点击上方“查询档案”按钮核验学籍信息。
-                        </div>
-                    </div>
                 </div>
             </section>
         </main>
@@ -659,61 +633,15 @@
 </div>
 
 <script>
-    // ==================== 核心数据库状态 ====================
+    // ==================== 核心状态管理 ====================
     const STATE = {
         currentUser: null,
         token: null,
-        users: [
-            {
-                id: 1,
-                username: "zhangsan",
-                password: "Pass123456",
-                email: "zhangsan@campus.edu.cn",
-                role: "STUDENT",
-                profile: {
-                    realName: "张三",
-                    studentId: "20230001",
-                    department: "计算机科学与技术学院",
-                    phone: "13800138000"
-                }
-            },
-            {
-                id: 2,
-                username: "lisi",
-                password: "Pass123456",
-                email: "lisi@campus.edu.cn",
-                role: "STUDENT",
-                profile: {
-                    realName: "李四",
-                    studentId: "20230002",
-                    department: "软件工程学院",
-                    phone: "13900139000"
-                }
-            }
-        ],
-        classrooms: [
-            { id: 101, roomNo: "一教 A-104", building: "第一教学楼", capacity: 60, equip: "4K投影 / 智慧黑板 / 空调", slot: "上午 (08:00-12:00)", status: "FREE", bookedBy: null, purpose: null },
-            { id: 102, roomNo: "一教 A-208", building: "第一教学楼", capacity: 120, equip: "双屏阶梯教室 / 无线麦", slot: "下午 (14:00-18:00)", status: "FREE", bookedBy: null, purpose: null },
-            { id: 103, roomNo: "计科楼 B-305", building: "计算机科研楼", capacity: 45, equip: "高性能图形工作站 / 投影", slot: "下午 (14:00-18:00)", status: "FREE", bookedBy: null, purpose: null },
-            { id: 104, roomNo: "计科楼 B-412", building: "计算机科研楼", capacity: 80, equip: "智慧录播系统 / 分组屏", slot: "晚间 (18:30-22:00)", status: "FREE", bookedBy: null, purpose: null },
-            { id: 105, roomNo: "图书馆研讨室 301", building: "图书馆研讨区", capacity: 12, equip: "触控交互白板 / 静音舱", slot: "下午 (14:00-18:00)", status: "BOOKED", bookedBy: "张三", purpose: "小组 Sprint 2 项目研讨" },
-            { id: 106, roomNo: "图书馆研讨室 305", building: "图书馆研讨区", capacity: 8, equip: "高清投屏电视 / 独立空调", slot: "晚间 (18:30-22:00)", status: "FREE", bookedBy: null, purpose: null }
-        ],
-        courses: [
-            { code: "CS301", name: "软件工程与敏捷开发", type: "专业核心课", teacher: "林教授", schedule: "周二 1-2节 · 信息楼B302", credits: 3.0, enrolled: 42, capacity: 50, selected: true },
-            { code: "CS305", name: "分布式系统与微服务架构", type: "专业选修课", teacher: "陈副教授", schedule: "周三 3-4节 · 计科楼B305", credits: 3.0, enrolled: 38, capacity: 45, selected: true },
-            { code: "AI204", name: "大模型应用与提示词工程", type: "全校通识课", teacher: "周博士", schedule: "周四 7-8节 · 一教A208", credits: 2.0, enrolled: 88, capacity: 90, selected: false },
-            { code: "SE210", name: "DevOps与持续交付流水线", type: "专业选修课", teacher: "王高工", schedule: "周五 5-6节 · 计科楼B412", credits: 2.5, enrolled: 29, capacity: 40, selected: false },
-            { code: "GE108", name: "近代中国社会发展史导论", type: "人文通识课", teacher: "赵教授", schedule: "周一 9-10节 · 一教A104", credits: 2.0, enrolled: 60, capacity: 60, selected: false }
-        ],
-        lostItems: [
-            { id: 1, title: "校园一卡通 (学号: 20230001)", desc: "蓝色挂绳卡套，内含饭卡", location: "图书馆三楼自习室", publisher: "zhangsan", time: "2026-10-20 09:15", status: "UNCLAIMED", claimant: null },
-            { id: 2, title: "苹果 AirPods Pro 蓝牙耳机", desc: "白色充电盒，外壳贴有宇航员贴纸", location: "第二食堂一楼快餐区", publisher: "lisi", time: "2026-10-20 10:30", status: "UNCLAIMED", claimant: null },
-            { id: 3, title: "罗技无线鼠标与接收器", desc: "黑色磨砂材质，留在机房电脑旁", location: "计算机科研楼 B-305", publisher: "zhangsan", time: "2026-10-19 16:40", status: "UNCLAIMED", claimant: null }
-        ]
+        classrooms: [],
+        courses: [],
+        lostItems: []
     };
 
-    // ==================== 通用轻提示 ====================
     function showToast(message, type = "info") {
         const container = document.getElementById("toastContainer");
         const toast = document.createElement("div");
@@ -730,7 +658,7 @@
         el.innerText = msg;
     }
 
-    // ==================== 1. 登录与注册切换及逻辑 ====================
+    // ==================== 1. 登录与注册 ====================
     function switchAuthTab(tab) {
         document.getElementById("authMessage").style.display = "none";
         if (tab === "login") {
@@ -752,7 +680,7 @@
         showToast("已为您自动填入找回的默认账号凭证", "success");
     }
 
-    function handleRegister(e) {
+    async function handleRegister(e) {
         e.preventDefault();
         const username = document.getElementById("regUsername").value.trim();
         const password = document.getElementById("regPassword").value.trim();
@@ -762,55 +690,76 @@
         const email = document.getElementById("regEmail").value.trim();
         const phone = document.getElementById("regPhone").value.trim();
 
-        const exists = STATE.users.some(u => u.username.toLowerCase() === username.toLowerCase());
-        if (exists) {
-            showAuthBanner("注册失败 (状态码 400)：该用户名已被占用 (Username already exists.)，请更换用户名！", true);
-            showToast("注册被拦截：用户名已存在 (HTTP 400)", "error");
-            return;
+        try {
+            const resp = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, realName, studentId, department, email, phone })
+            });
+            const data = await resp.json();
+
+            if (resp.ok && data.code === 200) {
+                showAuthBanner(`注册成功 (状态码 200)！欢迎你，${realName} 同学，请使用刚注册的账号登录。`, false);
+                showToast("学籍账号注册成功！请登录", "success");
+                document.getElementById("loginUsername").value = username;
+                document.getElementById("loginPassword").value = "";
+                setTimeout(() => switchAuthTab("login"), 1200);
+            } else {
+                showAuthBanner(`注册失败 (状态码 ${resp.status})：${data.message || '注册异常'}`, true);
+                showToast(data.message || "注册失败", "error");
+            }
+        } catch (err) {
+            showAuthBanner("网络通信异常，请确认后端容器运行正常！", true);
+            showToast("请求失败: " + err.message, "error");
         }
-
-        const newUser = {
-            id: STATE.users.length + 1,
-            username,
-            password,
-            email,
-            role: "STUDENT",
-            profile: { realName, studentId, department, phone }
-        };
-        STATE.users.push(newUser);
-
-        showAuthBanner(`注册成功 (状态码 200)！欢迎你，${realName} 同学，请使用刚注册的账号登录。`, false);
-        showToast("学籍账号注册成功！请登录", "success");
-        document.getElementById("loginUsername").value = username;
-        document.getElementById("loginPassword").value = "";
-        setTimeout(() => switchAuthTab("login"), 1200);
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
         e.preventDefault();
         const u = document.getElementById("loginUsername").value.trim();
         const p = document.getElementById("loginPassword").value.trim();
 
-        const matchedUser = STATE.users.find(user => user.username === u && user.password === p);
-        if (!matchedUser) {
-            showAuthBanner("登录失败 (状态码 401)：用户名不存在或密码错误 (Invalid username or password.)！", true);
-            showToast("认证失败：账号或密码错误 (HTTP 401)", "error");
-            return;
+        try {
+            const resp = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            const res = await resp.json();
+
+            if (resp.ok && res.code === 200) {
+                STATE.currentUser = res.data;
+                STATE.token = "JWT_TOKEN_" + Math.random().toString(36).substring(2, 10).toUpperCase() + "_" + res.data.id;
+
+                localStorage.setItem("cm_user", JSON.stringify(res.data));
+                localStorage.setItem("cm_token", STATE.token);
+                if (!localStorage.getItem("cm_active_tab")) {
+                    localStorage.setItem("cm_active_tab", "dashboard");
+                }
+
+                document.getElementById("authPortal").style.display = "none";
+                document.getElementById("appLayout").style.display = "flex";
+
+                initUserDashboard();
+                showToast(`欢迎回来，${res.data.profile.realName} 同学！`, "success");
+            } else {
+                showAuthBanner(`登录失败 (状态码 401)：${res.message || '用户名不存在或密码错误！'}`, true);
+                showToast("认证失败：账号或密码错误 (HTTP 401)", "error");
+            }
+        } catch (err) {
+            showAuthBanner("后端服务连接失败，请检查容器状态", true);
+            showToast("通信异常: " + err.message, "error");
         }
-
-        STATE.currentUser = matchedUser;
-        STATE.token = "JWT_TOKEN_" + Math.random().toString(36).substring(2, 10).toUpperCase() + "_" + matchedUser.id;
-
-        document.getElementById("authPortal").style.display = "none";
-        document.getElementById("appLayout").style.display = "flex";
-
-        initUserDashboard();
-        showToast(`欢迎回来，${matchedUser.profile.realName} 同学！`, "success");
     }
 
     function handleLogout() {
         STATE.currentUser = null;
         STATE.token = null;
+
+        localStorage.removeItem("cm_user");
+        localStorage.removeItem("cm_token");
+        localStorage.removeItem("cm_active_tab");
+
         document.getElementById("appLayout").style.display = "none";
         document.getElementById("authPortal").style.display = "flex";
         document.getElementById("loginPassword").value = "";
@@ -818,13 +767,16 @@
         showToast("您已安全退出智慧校园服务平台", "info");
     }
 
-    // ==================== 2. 主平台导航与数据同步 ====================
+    // ==================== 2. 主平台导航与页面记忆 ====================
     function switchNav(sectionId, menuEl) {
+        localStorage.setItem("cm_active_tab", sectionId);
+
         document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("active"));
-        menuEl.classList.add("active");
+        if (menuEl) menuEl.classList.add("active");
 
         document.querySelectorAll(".module-section").forEach(sec => sec.classList.remove("active"));
-        document.getElementById("sec-" + sectionId).classList.add("active");
+        const targetSection = document.getElementById("sec-" + sectionId);
+        if (targetSection) targetSection.classList.add("active");
 
         const titles = {
             dashboard: "校园工作台首页",
@@ -833,11 +785,21 @@
             lostfound: "校园失物招领中心",
             profile: "个人实名学籍档案中心"
         };
-        document.getElementById("pageHeaderTitle").innerText = titles[sectionId];
+        document.getElementById("pageHeaderTitle").innerText = titles[sectionId] || "智慧校园综合服务平台";
+
+        if (sectionId === "lostfound") {
+            loadRemoteLostItems();
+        } else if (sectionId === "classroom") {
+            loadRemoteClassrooms();
+        } else if (sectionId === "course") {
+            loadRemoteCourses();
+        }
     }
 
     function initUserDashboard() {
         const u = STATE.currentUser;
+        if (!u || !u.profile) return;
+
         document.getElementById("topUserName").innerText = u.profile.realName;
         document.getElementById("topUserDept").innerText = `${u.profile.department} · ${u.profile.studentId}`;
         document.getElementById("topUserAvatar").innerText = u.profile.realName.charAt(0);
@@ -849,21 +811,34 @@
         document.getElementById("cardPhone").innerText = u.profile.phone;
         document.getElementById("cardEmail").innerText = u.email;
 
-        renderClassrooms();
-        renderCourses();
-        renderLostItems();
+        loadRemoteClassrooms();
+        loadRemoteCourses();
+        loadRemoteLostItems();
         updateDashboardCounters();
-        queryProfileById();
     }
 
     function updateDashboardCounters() {
         const totalCredits = STATE.courses.filter(c => c.selected).reduce((sum, c) => sum + c.credits, 0);
-        const myBookings = STATE.classrooms.filter(r => r.status === "BOOKED").length;
+        const myName = STATE.currentUser ? STATE.currentUser.profile.realName : "";
+        const myBookings = STATE.classrooms.filter(r => r.status === "BOOKED" && r.bookedBy === myName).length;
         const unclaimedCount = STATE.lostItems.filter(i => i.status === "UNCLAIMED").length;
 
         document.getElementById("dashCredits").innerText = `${totalCredits.toFixed(1)} 学分`;
         document.getElementById("dashBookings").innerText = `${myBookings} 间`;
         document.getElementById("dashUnclaimed").innerText = `${unclaimedCount} 件`;
+    }
+
+    // ==================== 3. 教室预约 ====================
+    async function loadRemoteClassrooms() {
+        try {
+            const resp = await fetch('/api/classrooms');
+            if (resp.ok) {
+                STATE.classrooms = await resp.json();
+                renderClassrooms();
+            }
+        } catch (err) {
+            console.error("加载教室数据失败:", err);
+        }
     }
 
     function renderClassrooms() {
@@ -909,7 +884,8 @@
 
         const tbody = document.getElementById("myBookingTable");
         tbody.innerHTML = "";
-        const bookedList = STATE.classrooms.filter(r => r.status === "BOOKED");
+        const myName = STATE.currentUser ? STATE.currentUser.profile.realName : "";
+        const bookedList = STATE.classrooms.filter(r => r.status === "BOOKED" && r.bookedBy === myName);
         bookedList.forEach(r => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -917,7 +893,7 @@
                 <td><b>${r.roomNo}</b></td>
                 <td>${r.building}</td>
                 <td>${r.slot}</td>
-                <td>${r.purpose}</td>
+                <td>${r.purpose || '学术研讨'}</td>
                 <td>${r.bookedBy}</td>
                 <td><span class="badge badge-green">预约生效中</span></td>
                 <td><button class="btn-sm btn-sm-danger" onclick="cancelClassroom(${r.id})">取消预约</button></td>
@@ -927,29 +903,67 @@
         updateDashboardCounters();
     }
 
-    function bookClassroom(id) {
+    async function bookClassroom(id) {
         const room = STATE.classrooms.find(r => r.id === id);
         if (!room || room.status !== "FREE") return;
 
         const purpose = prompt(`您正在预约【${room.roomNo}】（${room.slot}）\n请输入预约使用事由：`, "学术研讨与课程自习");
         if (!purpose) return;
 
-        room.status = "BOOKED";
-        room.bookedBy = STATE.currentUser.profile.realName;
-        room.purpose = purpose;
+        const bookedBy = STATE.currentUser ? STATE.currentUser.profile.realName : "学生";
 
-        renderClassrooms();
-        showToast(`预约成功！已为您锁定 ${room.roomNo}`, "success");
+        try {
+            const resp = await fetch('/api/classrooms/book', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, bookedBy, purpose })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                showToast(`预约成功！已为您锁定 ${room.roomNo}`, "success");
+                await loadRemoteClassrooms();
+            } else {
+                showToast(data.message || "预约失败", "error");
+            }
+        } catch (err) {
+            showToast("网络请求异常: " + err.message, "error");
+        }
     }
 
-    function cancelClassroom(id) {
+    async function cancelClassroom(id) {
         const room = STATE.classrooms.find(r => r.id === id);
         if (!room) return;
-        room.status = "FREE";
-        room.bookedBy = null;
-        room.purpose = null;
-        renderClassrooms();
-        showToast(`已取消 ${room.roomNo} 的教室预约，资源已释放`, "info");
+
+        try {
+            const resp = await fetch('/api/classrooms/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                showToast(`已取消 ${room.roomNo} 的教室预约，资源已释放`, "info");
+                await loadRemoteClassrooms();
+            } else {
+                showToast(data.message || "取消失败", "error");
+            }
+        } catch (err) {
+            showToast("网络请求异常: " + err.message, "error");
+        }
+    }
+
+    // ==================== 4. 在线选课 ====================
+    async function loadRemoteCourses() {
+        if (!STATE.currentUser) return;
+        try {
+            const resp = await fetch('/api/courses?username=' + encodeURIComponent(STATE.currentUser.username));
+            if (resp.ok) {
+                STATE.courses = await resp.json();
+                renderCourses();
+            }
+        } catch (err) {
+            console.error("加载选课数据失败:", err);
+        }
     }
 
     function renderCourses() {
@@ -1007,26 +1021,61 @@
         updateDashboardCounters();
     }
 
-    function selectCourse(code) {
+    async function selectCourse(code) {
         const course = STATE.courses.find(c => c.code === code);
-        if (!course || course.selected) return;
-        if (course.enrolled >= course.capacity) {
-            showToast("选课失败：该课程课容量已满！", "error");
-            return;
+        if (!course) return;
+
+        try {
+            const resp = await fetch('/api/courses/select', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: STATE.currentUser.username, code: code })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                showToast(`选课成功！《${course.name}》已加入您的课表`, "success");
+                await loadRemoteCourses();
+            } else {
+                showToast(data.message || "选课失败", "error");
+            }
+        } catch (err) {
+            showToast("网络请求异常: " + err.message, "error");
         }
-        course.selected = true;
-        course.enrolled += 1;
-        renderCourses();
-        showToast(`选课成功！《${course.name}》已加入您的课表`, "success");
     }
 
-    function dropCourse(code) {
+    async function dropCourse(code) {
         const course = STATE.courses.find(c => c.code === code);
-        if (!course || !course.selected) return;
-        course.selected = false;
-        course.enrolled -= 1;
-        renderCourses();
-        showToast(`已成功退选《${course.name}》`, "info");
+        if (!course) return;
+
+        try {
+            const resp = await fetch('/api/courses/drop', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: STATE.currentUser.username, code: code })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                showToast(`已成功退选《${course.name}》`, "info");
+                await loadRemoteCourses();
+            } else {
+                showToast(data.message || "退课失败", "error");
+            }
+        } catch (err) {
+            showToast("网络请求异常: " + err.message, "error");
+        }
+    }
+
+    // ==================== 5. 失物招领 ====================
+    async function loadRemoteLostItems() {
+        try {
+            const resp = await fetch('/api/lost-items');
+            if (resp.ok) {
+                STATE.lostItems = await resp.json();
+                renderLostItems();
+            }
+        } catch (err) {
+            console.error("加载失物招领数据异常:", err);
+        }
     }
 
     function renderLostItems(list = STATE.lostItems) {
@@ -1044,7 +1093,7 @@
                 </td>
                 <td>${item.location}</td>
                 <td>${item.publisher}</td>
-                <td style="font-size:12px; color:var(--text-muted);">${item.time}</td>
+                <td style="font-size:12px; color:var(--text-muted);">${item.time || ''}</td>
                 <td>
                     <span class="badge ${isUnclaimed ? 'badge-yellow' : 'badge-gray'}">
                         ${isUnclaimed ? '待认领 (UNCLAIMED)' : '已归还 (CLAIMED)'}
@@ -1063,7 +1112,7 @@
         updateDashboardCounters();
     }
 
-    function publishLostItem() {
+    async function publishLostItem() {
         const title = document.getElementById("lfTitle").value.trim();
         const location = document.getElementById("lfLocation").value.trim();
         const desc = document.getElementById("lfDesc").value.trim();
@@ -1073,27 +1122,27 @@
             return;
         }
 
-        const now = new Date();
-        const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const publisher = STATE.currentUser ? STATE.currentUser.profile.realName : "学生";
 
-        const newItem = {
-            id: STATE.lostItems.length + 1,
-            title,
-            location,
-            desc: desc || "拾获同学未填写附加描述",
-            publisher: STATE.currentUser.profile.realName,
-            time: timeStr,
-            status: "UNCLAIMED",
-            claimant: null
-        };
-        STATE.lostItems.unshift(newItem);
-
-        document.getElementById("lfTitle").value = "";
-        document.getElementById("lfLocation").value = "";
-        document.getElementById("lfDesc").value = "";
-
-        renderLostItems();
-        showToast(`失物登记成功！初始状态已设为【待认领】`, "success");
+        try {
+            const resp = await fetch('/api/lost-items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, location, desc, publisher })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                document.getElementById("lfTitle").value = "";
+                document.getElementById("lfLocation").value = "";
+                document.getElementById("lfDesc").value = "";
+                showToast("失物登记成功！初始状态已设为【待认领】", "success");
+                await loadRemoteLostItems();
+            } else {
+                showToast("发布失败: " + (data.message || "服务错误"), "error");
+            }
+        } catch (err) {
+            showToast("网络请求异常: " + err.message, "error");
+        }
     }
 
     function searchLostItems() {
@@ -1101,7 +1150,7 @@
         const filtered = STATE.lostItems.filter(i =>
             i.title.toLowerCase().includes(kw) ||
             i.location.toLowerCase().includes(kw) ||
-            i.desc.toLowerCase().includes(kw)
+            (i.desc && i.desc.toLowerCase().includes(kw))
         );
         renderLostItems(filtered);
         showToast(`检索完成：共匹配到 ${filtered.length} 条失物记录`, "info");
@@ -1112,7 +1161,7 @@
         renderLostItems();
     }
 
-    function claimLostItem(id) {
+    async function claimLostItem(id) {
         const item = STATE.lostItems.find(i => i.id === id);
         if (!item) return;
 
@@ -1124,48 +1173,50 @@
         const claimantName = prompt(`您正在认领【${item.title}】\n请确认认领人姓名与学号：`, `${STATE.currentUser.profile.realName} (${STATE.currentUser.profile.studentId})`);
         if (!claimantName) return;
 
-        item.status = "CLAIMED";
-        item.claimant = claimantName;
-        renderLostItems();
-        showToast(`认领成功！物品状态已更新为【已归还 (CLAIMED)】`, "success");
-    }
-
-    function queryProfileById() {
-        const idVal = parseInt(document.getElementById("queryUserIdInput").value, 10);
-        const resultBox = document.getElementById("profileQueryResult");
-
-        const targetUser = STATE.users.find(u => u.id === idVal);
-        if (targetUser) {
-            resultBox.style.borderColor = "#a7f3d0";
-            resultBox.style.background = "#ecfdf5";
-            resultBox.innerHTML = `
-                <div style="color:#047857; font-weight:700; margin-bottom:10px;">
-                    ✅ 查询成功 (状态码 200) · 已返回 UserProfile 完整实体数据
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; color:#1e293b; font-size:13px;">
-                    <div><b>系统编号 (UserID)：</b> ${targetUser.id}</div>
-                    <div><b>登录用户名：</b> ${targetUser.username}</div>
-                    <div><b>真实姓名：</b> ${targetUser.profile.realName}</div>
-                    <div><b>学号 (StudentID)：</b> ${targetUser.profile.studentId}</div>
-                    <div><b>所属学院：</b> ${targetUser.profile.department}</div>
-                    <div><b>联系电话：</b> ${targetUser.profile.phone}</div>
-                    <div style="grid-column:span 2;"><b>校园邮箱：</b> ${targetUser.email}</div>
-                </div>
-            `;
-        } else {
-            resultBox.style.borderColor = "#fecaca";
-            resultBox.style.background = "#fef2f2";
-            resultBox.innerHTML = `
-                <div style="color:#b91c1c; font-weight:700; margin-bottom:6px;">
-                    ❌ 查询拦截 (状态码 404 Not Found)
-                </div>
-                <div style="color:#7f1d1d; font-size:13px;">
-                    系统中不存在 UserID 为 <b>${idVal}</b> 的学籍档案记录 (User profile not found.)，请核对后重新输入！
-                </div>
-            `;
-            showToast(`查询失败：UserID ${idVal} 不存在 (HTTP 404)`, "error");
+        try {
+            const resp = await fetch('/api/lost-items/claim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, claimant: claimantName })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.code === 200) {
+                showToast("认领成功！物品状态已更新为【已归还 (CLAIMED)】", "success");
+                await loadRemoteLostItems();
+            } else {
+                showToast("认领失败: " + (data.message || "已被认领"), "error");
+            }
+        } catch (err) {
+            showToast("通信异常: " + err.message, "error");
         }
     }
+
+    // ==================== 6. 恢复登录态与页面记忆 ====================
+    window.addEventListener("DOMContentLoaded", () => {
+        const savedUserStr = localStorage.getItem("cm_user");
+        const savedToken = localStorage.getItem("cm_token");
+
+        if (savedUserStr && savedToken) {
+            try {
+                STATE.currentUser = JSON.parse(savedUserStr);
+                STATE.token = savedToken;
+
+                document.getElementById("authPortal").style.display = "none";
+                document.getElementById("appLayout").style.display = "flex";
+
+                initUserDashboard();
+
+                const activeTab = localStorage.getItem("cm_active_tab") || "dashboard";
+                const menuItems = Array.from(document.querySelectorAll(".menu-item"));
+                const targetMenu = menuItems.find(el => el.getAttribute("onclick")?.includes(`'${activeTab}'`));
+                switchNav(activeTab, targetMenu);
+            } catch (e) {
+                console.error("恢复登录态失败:", e);
+                localStorage.removeItem("cm_user");
+                localStorage.removeItem("cm_token");
+            }
+        }
+    });
 </script>
 
 </body>
